@@ -32,7 +32,7 @@ class LogisticRegressionScratchMultiClass:
                 y_pred = self.sigmoid(z) # map it to [0,1]
                 error = y_pred - yi # difference of mapped and real y,   Gradient for bias
                 weights = [w - self.lr * error * x for w, x in zip(weights, xi)] # adjust the weight base on this iteration
-                                                                                #[w1w2w3w4] - lr * error *[x1x2x3x4]
+                                                                                 #[w1w2w3w4] - lr * error *[x1x2x3x4]
                 bias -= self.lr * error
         return weights, bias
 
@@ -45,15 +45,17 @@ class LogisticRegressionScratchMultiClass:
             self.weights.append(w)
             self.biases.append(b)      # save the weight and bias.
 
-    def predict_proba(self, x):
+    def predict_proba(self, x): # take a X testing data
         probs = []
         for w, b in zip(self.weights, self.biases):
-            z = sum(wi * xi for wi, xi in zip(w, x)) + b
-            probs.append(self.sigmoid(z))
-        return probs
+            z = sum(wi * xi for wi, xi in zip(w, x)) + b # calculate the score for each class
+            probs.append(self.sigmoid(z))  # convert and append the probability to a list
+        return probs # return the list
 
     def predict(self, X):
         return [int(self.classes[max(range(len(self.classes)), key=lambda i: self.predict_proba(x)[i])]) for x in X]
+    # return the max probability
+    #
 
 # Get the current timestamp
 timestamp = datetime.now().isoformat()
