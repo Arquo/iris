@@ -3,6 +3,10 @@ import random
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from datetime import datetime
+
+
+
 
 class LogisticRegressionScratchMultiClass:
     # learning rate: step size the model updates
@@ -18,26 +22,28 @@ class LogisticRegressionScratchMultiClass:
         return 1 / (1 + math.exp(-z))
 
     def train_binary(self, X, y):
-        n_features = len(X[0])
-        weights = [0] * n_features
-        bias = 0
+        n_features = len(X[0])  # number of class in training X
+        weights = [0] * n_features   # initialize the weight
+        bias = 0 # initialize 0
 
-        for _ in range(self.epochs):
-            for xi, yi in zip(X, y):
-                z = sum(w * x for w, x in zip(weights, xi)) + bias
-                y_pred = self.sigmoid(z)
-                error = y_pred - yi
-                weights = [w - self.lr * error * x for w, x in zip(weights, xi)]
+        for _ in range(self.epochs):  # go through the loop for #self.epochs times, _ is a plaseholder, we dont use it
+            for xi, yi in zip(X, y): # pairs of X and y, now y is 1 and 0, now looking at only a pair of X and y
+                z = sum(w * x for w, x in zip(weights, xi)) + bias  # a score,
+                y_pred = self.sigmoid(z) # map it to [0,1]
+                error = y_pred - yi # difference of mapped and real y,   Gradient for bias
+                weights = [w - self.lr * error * x for w, x in zip(weights, xi)] # adjust the weight base on this iteration
+                                                                                #[w1w2w3w4] - lr * error *[x1x2x3x4]
                 bias -= self.lr * error
         return weights, bias
 
     def train(self, X, y):
-        self.classes = sorted(set(y))
-        for c in self.classes:
-            binary_y = [1 if label == c else 0 for label in y]
-            w, b = self.train_binary(X, binary_y)
+        # x train, y train data
+        self.classes = sorted(set(y)) # find all unique y, sort to 0,1,2, save them in classes
+        for c in self.classes: # iterate through 0,1,2
+            binary_y = [1 if label == c else 0 for label in y] # categorize them into A or Not A 1, and 0
+            w, b = self.train_binary(X, binary_y)   # get the weight and bias.
             self.weights.append(w)
-            self.biases.append(b)
+            self.biases.append(b)      # save the weight and bias.
 
     def predict_proba(self, x):
         probs = []
@@ -49,6 +55,8 @@ class LogisticRegressionScratchMultiClass:
     def predict(self, X):
         return [int(self.classes[max(range(len(self.classes)), key=lambda i: self.predict_proba(x)[i])]) for x in X]
 
+# Get the current timestamp
+timestamp = datetime.now().isoformat()
 
 # Load and preprocess dataset
 iris_csv = pd.read_csv("C:\\Users\\RAY\\Desktop\\Python\\IrisFlowerClassification\\Iris.csv")
